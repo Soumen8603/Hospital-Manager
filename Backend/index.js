@@ -36,7 +36,10 @@ app.use("/payments", paymentRouter);
 app.use("/prescriptions", prescriptionRouter);
 app.use("/reports", reportRouter);
 
-app.listen(process.env.port, async () => {
+// --- CORRECTED SECTION STARTS HERE ---
+const PORT = process.env.PORT || 8080; 
+
+app.listen(PORT, async () => {
   try {
     await connection;
     console.log("Connected to DB");
@@ -44,5 +47,5 @@ app.listen(process.env.port, async () => {
     console.log("Unable to connect to DB");
     console.log(error);
   }
-  console.log(`Listening at port ${process.env.port}`);
+  console.log(`Listening at port ${PORT}`);
 });
