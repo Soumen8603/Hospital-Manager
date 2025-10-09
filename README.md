@@ -71,7 +71,7 @@ Password - masai
 
 ## 🔗 Links
 
-Dashboard - https://hm-system.netlify.app/
+Dashboard - https://polite-biscochitos-322f9c.netlify.app/
 
 User Side - https://hms-user-side.netlify.app/
 
