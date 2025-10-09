@@ -75,7 +75,7 @@ Dashboard - https://hm-system.netlify.app/
 
 User Side - https://hms-user-side.netlify.app/
 
-Server - https://github.com/piyush-agrawal6/HMS-Backend
+Server - https://hospital-manager-qmnu.onrender.com/
 
 ## Screenshots
 
