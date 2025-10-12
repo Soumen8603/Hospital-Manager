@@ -18,7 +18,18 @@ const reportRouter = require("./routes/Reports.Route");
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+
+// --- CORRECTED CORS CONFIGURATION ---
+// This is the secure way to set up CORS.
+// It allows requests ONLY from your deployed frontend and your local machine.
+app.use(
+  cors({
+    origin: [process.env.FRONTEND_URL, "http://localhost:5173"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    credentials: true,
+  })
+);
+// --- END OF CORRECTED SECTION ---
 
 app.get("/", (req, res) => {
   res.send("Homepage");
@@ -36,8 +47,7 @@ app.use("/payments", paymentRouter);
 app.use("/prescriptions", prescriptionRouter);
 app.use("/reports", reportRouter);
 
-// --- CORRECTED SECTION STARTS HERE ---
-const PORT = process.env.PORT || 8080; 
+const PORT = process.env.PORT || 8080;
 
 app.listen(PORT, async () => {
   try {
