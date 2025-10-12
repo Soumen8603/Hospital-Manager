@@ -9,7 +9,7 @@ export const NurseLogin = (data) => async (dispatch) => {
   try {
     dispatch({ type: types.LOGIN_NURSE_REQUEST });
     const res = await axios.post(
-      `${API_URL}/test-login`, // Temporarily changed for testing
+      `${API_URL}/nurses/login`, // This is now reverted to the correct URL
       data
     );
     dispatch({
@@ -233,3 +233,4 @@ export const forgetPassword = (data) => async (dispatch) => {
     console.log(error);
   }
 };
+
