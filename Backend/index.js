@@ -20,6 +20,8 @@ const app = express();
 app.use(express.json());
 
 // --- CORRECTED CORS CONFIGURATION ---
+// This is the secure way to set up CORS.
+// It allows requests ONLY from your deployed frontend and your local machine.
 app.use(
   cors({
     origin: [process.env.FRONTEND_URL, "http://localhost:5173"],
@@ -44,14 +46,6 @@ app.use("/patients", patientRouter);
 app.use("/payments", paymentRouter);
 app.use("/prescriptions", prescriptionRouter);
 app.use("/reports", reportRouter);
-
-// --- START OF DIAGNOSTIC TEST ROUTE ---
-// This route is for testing purposes only. It bypasses the database and JWT logic.
-app.post("/test-login", (req, res) => {
-  console.log("--- SERVER RECEIVED TEST LOGIN REQUEST ---");
-  res.status(200).send({ message: "Successful", user: {name: "Test User"}, token: "test-token" });
-});
-// --- END OF DIAGNOSTIC TEST ROUTE ---
 
 const PORT = process.env.PORT || 8080;
 
