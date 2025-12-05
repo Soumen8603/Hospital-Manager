@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Radio } from "antd";
+import { Radio, Drawer } from "antd";
 import banner from "../../../img/banner.png";
 import admin from "../../../img/admin.jpg";
 import "./DLogin.css";
@@ -13,132 +13,131 @@ import {
 } from "../../../Redux/auth/action";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Drawer } from "antd";
+
 const notify = (text) => toast(text);
 
 const DLogin = () => {
   const [open, setOpen] = useState(false);
-
-  const showDrawer = () => {
-    setOpen(true);
-  };
-
-  const onClose = () => {
-    setOpen(false);
-  };
-
-  // ************************************************
   const [Loading, setLoading] = useState(false);
   const [placement, SetPlacement] = useState("Nurse");
   const [formvalue, setFormvalue] = useState({
     ID: "",
     password: "",
   });
+
+  const [ForgetPassword, setForgetPassword] = useState({
+    type: "",
+    email: "",
+  });
+  const [forgetLoading, setforgetLoading] = useState(false);
+
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const showDrawer = () => setOpen(true);
+  const onClose = () => setOpen(false);
 
   const Handlechange = (e) => {
     setFormvalue({ ...formvalue, [e.target.name]: e.target.value });
-  };
-  const navigate = useNavigate();
-  const HandleSubmit = (e) => {
-    e.preventDefault();
-    setLoading(true);
-    if (formvalue.ID !== "" && formvalue.password !== "") {
-      if (placement === "Nurse") {
-        let data = {
-          ...formvalue,
-          nurseID: formvalue.ID,
-        };
-        dispatch(NurseLogin(data)).then((res) => {
-          if (res.message === "Successful") {
-            notify("Login Successful");
-            setLoading(false);
-            return navigate("/dashboard");
-          }
-          if (res.message === "Wrong credentials") {
-            setLoading(false);
-
-            notify("Wrong credentials");
-          }
-          if (res.message === "Error") {
-            setLoading(false);
-
-            notify("Something went Wrong, Please Try Again");
-          }
-        });
-      } else if (placement === "Doctor") {
-        let data = {
-          ...formvalue,
-          docID: formvalue.ID,
-        };
-        console.log(data);
-        dispatch(DoctorLogin(data)).then((res) => {
-          if (res.message === "Successful") {
-            notify("Login Successful");
-            setLoading(false);
-
-            return navigate("/dashboard");
-          }
-          if (res.message === "Wrong credentials") {
-            setLoading(false);
-
-            notify("Wrong credentials");
-          }
-          if (res.message === "Error") {
-            setLoading(false);
-
-            notify("Something went Wrong, Please Try Again");
-          }
-        });
-      } else if (placement === "Admin") {
-        let data = {
-          ...formvalue,
-          adminID: formvalue.ID,
-        };
-        dispatch(AdminLogin(data)).then((res) => {
-          if (res.message === "Successful") {
-            notify("Login Successful");
-            setLoading(false);
-
-            return navigate("/dashboard");
-          }
-          if (res.message === "Wrong credentials") {
-            setLoading(false);
-
-            notify("Wrong credentials");
-          }
-          if (res.message === "Error") {
-            setLoading(false);
-
-            notify("Something went Wrong, Please Try Again");
-          }
-        });
-      }
-    }
   };
 
   const placementChange = (e) => {
     SetPlacement(e.target.value);
   };
 
-  const [ForgetPassword, setForgetPassword] = useState({
-    type: "",
-    email: "",
-  });
+  const HandleSubmit = (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    if (formvalue.ID === "" || formvalue.password === "") {
+      notify("Please fill all fields");
+      setLoading(false);
+      return;
+    }
+
+    if (placement === "Nurse") {
+      const data = {
+        ...formvalue,
+        nurseID: formvalue.ID,
+      };
+
+      dispatch(NurseLogin(data)).then((res) => {
+        const msg = res?.message;
+
+        if (msg === "Successful") {
+          notify("Login Successful");
+          setLoading(false);
+          return navigate("/dashboard");
+        }
+        if (msg === "Wrong credentials") {
+          notify("Wrong credentials");
+        } else if (msg === "Error") {
+          notify("Something went Wrong, Please Try Again");
+        } else {
+          notify("Unexpected error");
+        }
+        setLoading(false);
+      });
+    } else if (placement === "Doctor") {
+      const data = {
+        ...formvalue,
+        docID: formvalue.ID,
+      };
+
+      dispatch(DoctorLogin(data)).then((res) => {
+        const msg = res?.message;
+
+        if (msg === "Successful") {
+          notify("Login Successful");
+          setLoading(false);
+          return navigate("/dashboard");
+        }
+        if (msg === "Wrong credentials") {
+          notify("Wrong credentials");
+        } else if (msg === "Error") {
+          notify("Something went Wrong, Please Try Again");
+        } else {
+          notify("Unexpected error");
+        }
+        setLoading(false);
+      });
+    } else if (placement === "Admin") {
+      const data = {
+        ...formvalue,
+        adminID: formvalue.ID,
+      };
+
+      dispatch(AdminLogin(data)).then((res) => {
+        const msg = res?.message;
+
+        if (msg === "Successful") {
+          notify("Login Successful");
+          setLoading(false);
+          return navigate("/dashboard");
+        }
+        if (msg === "Wrong credentials") {
+          notify("Wrong credentials");
+        } else if (msg === "Error") {
+          notify("Something went Wrong, Please Try Again");
+        } else {
+          notify("Unexpected error");
+        }
+        setLoading(false);
+      });
+    }
+  };
 
   const HandleForgetPassword = (e) => {
     setForgetPassword({ ...ForgetPassword, [e.target.name]: e.target.value });
   };
 
-  const [forgetLoading, setforgetLoading] = useState(false);
-
   const HandleChangePassword = () => {
-    if (ForgetPassword.type === "") {
+    if (ForgetPassword.type === "" || ForgetPassword.email === "") {
       return notify("Please Fill all Details");
     }
     setforgetLoading(true);
     dispatch(forgetPassword(ForgetPassword)).then((res) => {
-      if (res.message === "User not found") {
+      if (res?.message === "User not found") {
         setforgetLoading(false);
         return notify("User Not Found");
       }
@@ -162,6 +161,7 @@ const DLogin = () => {
         </div>
         <div className="rightside">
           <h1>Login</h1>
+
           <div>
             <Radio.Group
               value={placement}
@@ -179,9 +179,11 @@ const DLogin = () => {
               </Radio.Button>
             </Radio.Group>
           </div>
+
           <div className="Profileimg">
             <img src={admin} alt="profile" />
           </div>
+
           <div>
             <form onSubmit={HandleSubmit}>
               <h3>{placement} ID</h3>
@@ -200,7 +202,10 @@ const DLogin = () => {
                 onChange={Handlechange}
                 required
               />
-              <button type="submit">{Loading ? "Loading..." : "Submit"}</button>
+              <button type="submit">
+                {Loading ? "Loading..." : "Submit"}
+              </button>
+
               <p style={{ marginTop: "10px" }}>
                 Forget Password?{" "}
                 <span
