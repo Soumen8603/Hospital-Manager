@@ -19,37 +19,14 @@ const app = express();
 
 app.use(express.json());
 
-// ===================== CORS CONFIG =====================
-const allowedOrigins = [
-  process.env.FRONTEND_URL,                          // from Render env
-  "https://polite-biscochitos-322f9c.netlify.app",   // admin frontend (fallback)
-  "http://localhost:5173",                           // Vite dev
-  "http://localhost:3000",                           // CRA dev (just in case)
-];
-
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // allow server-to-server or tools like Postman (no origin header)
-      if (!origin) {
-        return callback(null, true);
-      }
-
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-
-      return callback(new Error(`Not allowed by CORS: ${origin}`));
-    },
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-    credentials: true,
-  })
-);
-// =================== END CORS CONFIG ===================
+// 🔓 TEMP: allow all origins while debugging
+app.use(cors());
 
 app.get("/", (req, res) => {
   res.send("Homepage");
 });
+
+// ...routes + app.listen(...)
 
 // Routes
 app.use("/admin", adminRouter);
