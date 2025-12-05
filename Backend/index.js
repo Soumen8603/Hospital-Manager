@@ -19,16 +19,14 @@ const app = express();
 
 app.use(express.json());
 
-// 🔓 TEMP: allow all origins while debugging
+// While debugging you can keep it simple:
 app.use(cors());
+// later you can tighten it with allowedOrigins if you want
 
 app.get("/", (req, res) => {
   res.send("Homepage");
 });
 
-// ...routes + app.listen(...)
-
-// Routes
 app.use("/admin", adminRouter);
 app.use("/ambulances", ambulanceRouter);
 app.use("/appointments", appointmentRouter);
