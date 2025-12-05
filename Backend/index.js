@@ -19,9 +19,32 @@ const app = express();
 
 app.use(express.json());
 
-// While debugging you can keep it simple:
-app.use(cors());
-// later you can tighten it with allowedOrigins if you want
+// ---------------- CORS CONFIG ----------------
+const allowedOrigins = [
+  process.env.FRONTEND_URL,       // Netlify manager/admin frontend
+  process.env.USER_FRONTEND_URL,  // (optional) Netlify user/patient frontend
+  "http://localhost:5173",        // local admin (Vite)
+  "http://localhost:3000",        // local React default
+  "http://localhost:3001",        // local user frontend (your new app)
+].filter(Boolean);
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // allow REST tools / same-origin / server-to-server (no origin header)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    credentials: true,
+  })
+);
+// ------------------------------------------------
 
 app.get("/", (req, res) => {
   res.send("Homepage");
