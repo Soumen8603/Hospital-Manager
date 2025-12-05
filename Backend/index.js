@@ -19,22 +19,39 @@ const app = express();
 
 app.use(express.json());
 
-// --- CORRECTED CORS CONFIGURATION ---
-// This is the secure way to set up CORS.
-// It allows requests ONLY from your deployed frontend and your local machine.
+// ===================== CORS CONFIG =====================
+const allowedOrigins = [
+  process.env.FRONTEND_URL,                          // from Render env
+  "https://polite-biscochitos-322f9c.netlify.app",   // admin frontend (fallback)
+  "http://localhost:5173",                           // Vite dev
+  "http://localhost:3000",                           // CRA dev (just in case)
+];
+
 app.use(
   cors({
-    origin: [process.env.FRONTEND_URL, "http://localhost:5173"],
+    origin: (origin, callback) => {
+      // allow server-to-server or tools like Postman (no origin header)
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error(`Not allowed by CORS: ${origin}`));
+    },
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
   })
 );
-// --- END OF CORRECTED SECTION ---
+// =================== END CORS CONFIG ===================
 
 app.get("/", (req, res) => {
   res.send("Homepage");
 });
 
+// Routes
 app.use("/admin", adminRouter);
 app.use("/ambulances", ambulanceRouter);
 app.use("/appointments", appointmentRouter);
@@ -59,4 +76,3 @@ app.listen(PORT, async () => {
   }
   console.log(`Listening at port ${PORT}`);
 });
-
